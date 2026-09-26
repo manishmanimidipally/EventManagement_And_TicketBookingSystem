@@ -1,4 +1,4 @@
-# 🎟️ Event Ticket Booking System
+# 🎟️ Event Management and Ticket Booking System
 
 A **Core Java-based Event Ticket Booking System** developed using **Java, JDBC, and MySQL**.
 
