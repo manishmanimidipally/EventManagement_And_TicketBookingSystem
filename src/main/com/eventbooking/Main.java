@@ -17,6 +17,10 @@ import main.com.eventbooking.service.EventService;
 import main.com.eventbooking.service.PaymentService;
 import main.com.eventbooking.service.UserService;
 import main.com.eventbooking.util.IDGenerator;
+import main.com.eventbooking.dao.SeatDAO;
+import main.com.eventbooking.daoimpl.SeatDAOImpl;
+
+
 
 public class Main {
 
@@ -593,24 +597,27 @@ public class Main {
     // =====================================================
     // ADD SEAT
     // =====================================================
-
+    private static final SeatDAO seatDAO = new SeatDAOImpl();
     private static void addSeat() {
 
         System.out.println("\n====== ADD SEAT ======");
 
         System.out.print("Enter Event ID: ");
-
         int eventId = readInt();
 
-        eventService.getEventById(eventId);
+        // Check whether event exists
+        Event event = eventService.getEventById(eventId);
+
+        if (event == null) {
+            System.out.println("Event not found with ID: " + eventId);
+            return;
+        }
 
         System.out.print("Seat Number: ");
-        String seatNumber =
-                scanner.nextLine();
+        String seatNumber = scanner.nextLine();
 
         System.out.print("Seat Type: ");
-        String seatType =
-                scanner.nextLine();
+        String seatType = scanner.nextLine();
 
         System.out.print("Seat Price: ");
         double price = readDouble();
@@ -623,24 +630,17 @@ public class Main {
                 true
         );
 
-        /*
-         * SeatService is not present in the current
-         * project structure.
-         *
-         * Therefore seat insertion should eventually
-         * be handled through SeatDAO or a SeatService
-         * if you decide to add one.
-         */
+        seat.setSeatId(IDGenerator.generateSeatId());
 
-        System.out.println(
-                "Seat object created: " + seat
-        );
+        boolean result = seatDAO.addSeat(seat);
 
-        System.out.println(
-                "Add Seat operation requires SeatService."
-        );
+        if (result) {
+            System.out.println("\nSeat added successfully!");
+            System.out.println("Seat ID: " + seat.getSeatId());
+        } else {
+            System.out.println("\nFailed to add seat.");
+        }
     }
-
     // =====================================================
     // VIEW AVAILABLE SEATS
     // =====================================================
@@ -710,29 +710,26 @@ public class Main {
 
     private static void bookTicket(User user) {
 
-        System.out.println(
-                "\n====== BOOK TICKET ======"
-        );
+        System.out.println("\n====== BOOK TICKET ======");
 
         System.out.print("Enter Event ID: ");
-
         int eventId = readInt();
 
         System.out.print("Enter Seat ID: ");
-
         int seatId = readInt();
 
-        boolean result =
-                bookingService.createBooking(
-                        user.getUserId(),
-                        eventId,
-                        seatId
-                );
+        int bookingId = bookingService.createBooking(
+                user.getUserId(),
+                eventId,
+                seatId
+        );
 
-        if (result) {
+        if (bookingId > 0) {
+
+            System.out.println("\nTicket booked successfully!");
 
             System.out.println(
-                    "\nTicket booked successfully!"
+                    "Your Booking ID: " + bookingId
             );
 
             System.out.println(
@@ -746,7 +743,6 @@ public class Main {
             );
         }
     }
-
     // =====================================================
     // VIEW MY BOOKINGS
     // =====================================================
