@@ -29,7 +29,7 @@ public class BookingService {
         this.seatDAO = new SeatDAOImpl();
     }
 
-    public boolean createBooking(int userId, int eventId, int seatId) {
+    public int createBooking(int userId, int eventId, int seatId) {
 
         Event event = eventDAO.getEventById(eventId);
 
@@ -60,9 +60,13 @@ public class BookingService {
             );
         }
 
+        // Create booking
         Booking booking = new Booking();
 
-        booking.setBookingId(IDGenerator.generateBookingId());
+        // Generate Booking ID
+        int bookingId = IDGenerator.generateBookingId();
+
+        booking.setBookingId(bookingId);
         booking.setUserId(userId);
         booking.setEventId(eventId);
         booking.setSeatId(seatId);
@@ -70,11 +74,12 @@ public class BookingService {
         booking.setTotalAmount(seat.getPrice());
         booking.setBookingStatus("CONFIRMED");
 
-        boolean bookingCreated =
-                bookingDAO.createBooking(booking);
+        // Save booking
+        boolean bookingCreated = bookingDAO.createBooking(booking);
 
         if (bookingCreated) {
 
+            // Make seat unavailable
             boolean seatUpdated =
                     seatDAO.updateSeatAvailability(
                             seatId,
@@ -87,12 +92,13 @@ public class BookingService {
                 );
             }
 
-            return true;
+            // Return Booking ID
+            return bookingId;
         }
 
-        return false;
+        // Booking failed
+        return -1;
     }
-
     public Booking getBookingById(int bookingId) {
 
         Booking booking =
@@ -169,4 +175,6 @@ public class BookingService {
                 status
         );
     }
+
+	
 }
