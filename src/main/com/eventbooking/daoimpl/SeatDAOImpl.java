@@ -10,32 +10,31 @@ import java.util.List;
 
 public class SeatDAOImpl implements SeatDAO {
 
-    @Override
-    public boolean addSeat(Seat seat) {
+	@Override
+	public boolean addSeat(Seat seat) {
 
-        String sql = "INSERT INTO seats " +
-                "(seat_id, event_id, seat_number, seat_type, price, available) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+	    String sql = "INSERT INTO seats " +
+	            "(seat_id, event_id, seat_number, seat_type, price, available) " +
+	            "VALUES (?, ?, ?, ?, ?, ?)";
 
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+	    try (Connection con = DBConnection.getConnection();
+	         PreparedStatement ps = con.prepareStatement(sql)) {
 
-            ps.setInt(1, seat.getSeatId());
-            ps.setInt(2, seat.getEventId());
-            ps.setString(3, seat.getSeatNumber());
-            ps.setString(4, seat.getSeatType());
-            ps.setDouble(5, seat.getPrice());
-            ps.setBoolean(6, seat.isAvailable());
+	        ps.setInt(1, seat.getSeatId());
+	        ps.setInt(2, seat.getEventId());
+	        ps.setString(3, seat.getSeatNumber());
+	        ps.setString(4, seat.getSeatType());
+	        ps.setDouble(5, seat.getPrice());
+	        ps.setBoolean(6, seat.isAvailable());
 
-            return ps.executeUpdate() > 0;
+	        return ps.executeUpdate() > 0;
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
 
-        return false;
-    }
-
+	    return false;
+	}
     @Override
     public Seat getSeatById(int seatId) {
 
